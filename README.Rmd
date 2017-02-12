@@ -85,6 +85,19 @@ spplot(oz_heat,
 
 ```
 
+ROpenSciLabs has a `naturalearthdata` package that is fast and easy to use.
+
+```{r}
+if (!require("devtools")) install.packages("devtools")
+devtools::install_github("ropenscilabs/rnaturalearth")
+
+library("rnaturalearth")
+
+sp::plot(ne_states(geounit = 'australia'))
+
+```
+
+
 So, the goal from here is to:
 
 - Add the shapefile of Australia
