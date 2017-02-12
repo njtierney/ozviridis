@@ -118,6 +118,19 @@ spplot(oz_heat,
 
 ![](README_files/figure-markdown_github/unnamed-chunk-4-1.png)
 
+ROpenSciLabs has a `naturalearthdata` package that is fast and easy to use.
+
+``` r
+# if (!require("devtools")) install.packages("devtools")
+# devtools::install_github("ropenscilabs/rnaturalearth")
+
+library("rnaturalearth")
+
+sp::plot(ne_states(geounit = 'australia'))
+```
+
+![](README_files/figure-markdown_github/unnamed-chunk-5-1.png)
+
 So, the goal from here is to:
 
 -   Add the shapefile of Australia
