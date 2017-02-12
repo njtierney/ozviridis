@@ -134,7 +134,7 @@ head(oz_shape_sf)
 You can plot this directly from the spatial data, using the following method as described in the tidyverse here, https://github.com/tidyverse/ggplot2/wiki/plotting-polygon-shapefiles:
 
 
-```{r eval = FALSE}
+```{r}
 
 ggplot(oz_shape) +
    aes(x = long, 

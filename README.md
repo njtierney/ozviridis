@@ -257,6 +257,10 @@ ggplot(oz_shape) +
      coord_equal()
 ```
 
+    ## Regions defined for each Polygons
+
+![](README_files/figure-markdown_github/unnamed-chunk-7-1.png)
+
 But there are some ways to plot this using the new package `sf`. Do add the temperatures, I think I'll need to add this for each row of each feature.
 
 ``` r
