@@ -1,0 +1,100 @@
+---
+output:
+  md_document:
+    variant: markdown_github
+---
+
+There's a heatwave in Australia at the moment. And this is the heatmap that is getting shown of Australia
+
+```{r}
+
+knitr::include_graphics("bom-heat-map.png")
+
+```
+
+Which shows that things are really hot.
+
+But it's also pretty darn ugly. And I wanted to see if I could make it better, using awesome packages like `viridis` to colour the heat appropriately.
+
+This is me, documenting my struggle with shapefiles and geospatial data. Eventually this will get written up into a blog post. But I figured that it would be nice to put on github like this, so that others can contribute, if they like.
+
+First, we load the packages.
+
+```{r pkg-load}
+
+library(rgdal)
+library(rgeos)
+library(maptools)
+library(ggplot2)
+library(viridis)
+
+```
+
+Then we load the data, retrieved from [the bom site](http://www.bom.gov.au/jsp/awap/temp/index.jsp) - thanks to [Robbi Bishop Taylor](https://twitter.com/robbibt) for pointing out where to get it!
+
+```{r pkg-read}
+library(ozviridis)
+data("oz_heat")
+
+class(oz_heat)
+# oz_heat <- readGDAL("2017-02-11-oz-heat.grid") # reads in the whole raster
+
+```
+
+# Quick methods for plotting
+
+OK, so I can get a pretty basic plot with base `image`.
+
+```{r}
+
+image(oz_heat) # does a plot
+
+```
+
+But the colour scale isn't great.
+
+With the `viridis` package I can make them look pretty.
+
+```{r}
+
+image(oz_heat,
+      col = viridis(15,
+                    option = "magma")
+      )
+
+image(oz_heat,
+      col = viridis(15,
+                    option = "plasma")
+      )
+
+image(oz_heat,
+      col = viridis(15,
+                    option = "viridis")
+      )
+
+
+```
+
+There's also the default `spplot` from `sp`
+
+```{r}
+
+spplot(oz_heat,
+       col = viridis(15,
+                     option = "plasma"))
+
+```
+
+So, the goal from here is to:
+
+- Add the shapefile of Australia
+- use `sf`
+- Plot using ggplot
+- add better legends etc to make it look more similar to the BoM image
+
+
+```{r}
+
+knitr::include_graphics("bom-heat-map.png")
+
+```
