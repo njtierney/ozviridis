@@ -85,15 +85,15 @@ spplot(oz_heat,
 
 ```
 
-For an outline of Australia and states, there is `getData` from the `raster` package.
+ROpenSciLabs has a `naturalearthdata` package that is fast and easy to use.
 
 ```{r}
-# install.packages("raster")
-library(raster)
+if (!require("devtools")) install.packages("devtools")
+devtools::install_github("ropenscilabs/rnaturalearth")
 
-Oz <- getData(country = "AUS", level = 1)
+library("rnaturalearth")
 
-plot(Oz)
+sp::plot(ne_states(geounit = 'australia'))
 
 ```
 
