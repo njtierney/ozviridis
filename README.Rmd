@@ -85,6 +85,19 @@ spplot(oz_heat,
 
 ```
 
+For an outline of Australia and states, there is `getData` from the `raster` package.
+
+```{r}
+# install.packages("raster")
+library(raster)
+
+Oz <- getData(country = "AUS", level = 1)
+
+plot(Oz)
+
+```
+
+
 So, the goal from here is to:
 
 - Add the shapefile of Australia
