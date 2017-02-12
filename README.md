@@ -155,13 +155,13 @@ We can convert this to a simple features with `st_as_sf`:
 # convert to simple features
 oz_shape_sf <- sf::st_as_sf(oz_shape)
 
-oz_shape_sf
+head(oz_shape_sf)
 ```
 
-    ## Simple feature collection with 11 features and 59 fields
+    ## Simple feature collection with 6 features and 59 fields
     ## geometry type:  MULTIPOLYGON
     ## dimension:      XY
-    ## bbox:           xmin: 112.9194 ymin: -54.75042 xmax: 159.1065 ymax: -9.240167
+    ## bbox:           xmin: 112.9194 ymin: -54.75042 xmax: 158.9632 ymax: -10.96836
     ## epsg (SRID):    4326
     ## proj4string:    +proj=longlat +datum=WGS84 +no_defs
     ##     adm1_code OBJECTID_1 diss_me adm1_cod_1 iso_3166_2 wikipedia iso_a2
@@ -171,11 +171,6 @@ oz_shape_sf
     ## 171  AUS-2651       6322    2651   AUS-2651        AU-      <NA>     AU
     ## 172  AUS-2653       2572    2653   AUS-2653        AU-      <NA>     AU
     ## 173  AUS-2654       2573    2654   AUS-2654        AU-      <NA>     AU
-    ## 174  AUS-2655       2555    2655   AUS-2655        AU-      <NA>     AU
-    ## 175  AUS-2656       2554    2656   AUS-2656        AU-      <NA>     AU
-    ## 176  AUS-2657       6323    2657   AUS-2657        AU-      <NA>     AU
-    ## 177  AUS-2659       2557    2659   AUS-2659        AU-      <NA>     AU
-    ## 178  AUS-2660       2553    2660   AUS-2660        AU-      <NA>     AU
     ##     adm0_sr                         name name_alt name_local      type
     ## 168       5             Macquarie Island     <NA>       <NA>      <NA>
     ## 169       1         Jervis Bay Territory     <NA>       <NA> Territory
@@ -183,11 +178,6 @@ oz_shape_sf
     ## 171       6            Western Australia     <NA>       <NA>     State
     ## 172       1 Australian Capital Territory     <NA>       <NA> Territory
     ## 173       1              New South Wales     <NA>       <NA>     State
-    ## 174       3              South Australia     <NA>       <NA>     State
-    ## 175       5                     Victoria     <NA>       <NA>     State
-    ## 176       5                   Queensland     <NA>       <NA>     State
-    ## 177       5               Norfolk Island     <NA>       <NA> Territory
-    ## 178       5                     Tasmania     <NA>       <NA>     State
     ##       type_en code_local code_hasc note hasc_maybe region region_cod
     ## 168      <NA>       <NA>        AU <NA>       <NA>   <NA>       <NA>
     ## 169 Territory       <NA>     AU.JB <NA>       <NA>   <NA>       <NA>
@@ -195,11 +185,6 @@ oz_shape_sf
     ## 171     State       <NA>     AU.WA <NA>       <NA>   <NA>       <NA>
     ## 172 Territory       <NA>     AU.CT <NA>       <NA>   <NA>       <NA>
     ## 173     State       <NA>     AU.NS <NA>       <NA>   <NA>       <NA>
-    ## 174     State       <NA>     AU.SA <NA>       <NA>   <NA>       <NA>
-    ## 175     State       <NA>     AU.VI <NA>       <NA>   <NA>       <NA>
-    ## 176     State       <NA>     AU.QL <NA>       <NA>   <NA>       <NA>
-    ## 177 Territory       <NA>     AU.CT <NA>       <NA>   <NA>       <NA>
-    ## 178     State       <NA>     AU.TS <NA>       <NA>   <NA>       <NA>
     ##     provnum_ne gadm_level check_me scalerank datarank abbrev postal
     ## 168          0          0       20        10       10   <NA>   <NA>
     ## 169          2          1       20         2        3 J.B.T.     JB
@@ -207,11 +192,6 @@ oz_shape_sf
     ## 171          5          1       20         2        3   W.A.     WA
     ## 172          1          1       20         2        3 A.C.T.     CT
     ## 173          9          1       20         2        3 N.S.W.     NS
-    ## 174          6          1       20         2        3   S.A.     SA
-    ## 175          3          1       20         2        3   Vic.     VI
-    ## 176          8          1       20         2        3   Qld.     QL
-    ## 177         10          2       20         2        8   <NA>     CT
-    ## 178          4          1       20         2        3   Tas.     TS
     ##     area_sqkm sameascity labelrank          featurecla name_len mapcolor9
     ## 168         0        -99        20 Admin-1 aggregation       16         2
     ## 169         0        -99         2  Admin-1 scale rank       20         2
@@ -219,11 +199,6 @@ oz_shape_sf
     ## 171         0        -99         2  Admin-1 scale rank       17         2
     ## 172         0          9         9  Admin-1 scale rank       28         2
     ## 173         0        -99         2  Admin-1 scale rank       15         2
-    ## 174         0        -99         2  Admin-1 scale rank       15         2
-    ## 175         0        -99         2  Admin-1 scale rank        8         2
-    ## 176         0        -99         2  Admin-1 scale rank       10         2
-    ## 177         0        -99         3  Admin-1 scale rank       14         2
-    ## 178         0        -99         2  Admin-1 scale rank        8         2
     ##     mapcolor13 fips fips_alt   woe_id                         woe_label
     ## 168          7 <NA>     <NA> 22528478                              <NA>
     ## 169          7 <NA>     <NA>  1102841                              <NA>
@@ -231,11 +206,6 @@ oz_shape_sf
     ## 171          7 AS08     <NA>  2344706  Western Australia, AU, Australia
     ## 172          7 AS01     <NA>  1100968                              <NA>
     ## 173          7 AS02     <NA>  2344700    New South Wales, AU, Australia
-    ## 174          7 AS05     <NA>  2344703    South Australia, AU, Australia
-    ## 175          7 AS07     <NA>  2344705           Victoria, AU, Australia
-    ## 176          7 AS04     <NA>  2344702         Queensland, AU, Australia
-    ## 177          7 AS02     <NA> 23424905                              <NA>
-    ## 178          7 AS06     <NA>  2344704                              <NA>
     ##               woe_name latitude longitude sov_a3 adm0_a3 adm0_label
     ## 168   Macquarie Island -54.5929   158.898    AU1     AUS          5
     ## 169         Jervis Bay -35.1532   150.692    AU1     AUS          2
@@ -243,11 +213,6 @@ oz_shape_sf
     ## 171  Western Australia -25.8483   121.646    AU1     AUS          2
     ## 172           Canberra -35.4618   148.983    AU1     AUS          2
     ## 173    New South Wales -32.4751   146.781    AU1     AUS          2
-    ## 174    South Australia -29.6504   135.783    AU1     AUS          2
-    ## 175           Victoria -37.0082    144.75    AU1     AUS          2
-    ## 176         Queensland -23.1364   144.778    AU1     AUS          2
-    ## 177     Norfolk Island  -31.586   159.076    AU1     AUS          2
-    ## 178               <NA> -42.1383   146.603    AU1     AUS          2
     ##         admin  geonunit gu_a3    gn_id                      gn_name
     ## 168 Australia Australia   AUS        0                         <NA>
     ## 169 Australia Australia   AUS -2177478 Australian Capital Territory
@@ -255,11 +220,6 @@ oz_shape_sf
     ## 171 Australia Australia   AUS  2058645   State of Western Australia
     ## 172 Australia Australia   AUS  2177478 Australian Capital Territory
     ## 173 Australia Australia   AUS  2155400     State of New South Wales
-    ## 174 Australia Australia   AUS  2061327     State of South Australia
-    ## 175 Australia Australia   AUS  2145234            State of Victoria
-    ## 176 Australia Australia   AUS  2152274          State of Queensland
-    ## 177 Australia Australia   AUS      -99                         <NA>
-    ## 178 Australia Australia   AUS  2147291            State of Tasmania
     ##       gns_id                     gns_name gn_level gn_region gn_a1_code
     ## 168        0                         <NA>        0      <NA>        AU.
     ## 169        0                         <NA>       -1      <NA>        AU.
@@ -267,11 +227,6 @@ oz_shape_sf
     ## 171 -1608952            Western Australia        1      <NA>      AU.08
     ## 172 -1556567 Australian Capital Territory        1      <NA>      AU.01
     ## 173 -1591422              New South Wales        1      <NA>      AU.02
-    ## 174 -1601186              South Australia        1      <NA>      AU.05
-    ## 175 -1606920                     Victoria        1      <NA>      AU.07
-    ## 176 -1596531                   Queensland        1      <NA>      AU.04
-    ## 177        0                         <NA>        0      <NA>        AU.
-    ## 178 -1603760                     Tasmania        1      <NA>      AU.06
     ##     region_sub sub_code gns_level gns_lang gns_adm1 gns_region
     ## 168       <NA>     <NA>         0     <NA>     <NA>       <NA>
     ## 169       <NA>     <NA>         0     <NA>     <NA>       <NA>
@@ -279,11 +234,6 @@ oz_shape_sf
     ## 171       <NA>     <NA>         1      zho     AS08       <NA>
     ## 172       <NA>     <NA>         1      zho     AS01       <NA>
     ## 173       <NA>     <NA>         1      zho     AS02       <NA>
-    ## 174       <NA>     <NA>         1      zho     AS05       <NA>
-    ## 175       <NA>     <NA>         1      zho     AS07       <NA>
-    ## 176       <NA>     <NA>         1      zho     AS04       <NA>
-    ## 177       <NA>     <NA>         0     <NA>     <NA>       <NA>
-    ## 178       <NA>     <NA>         1      zho     AS06       <NA>
     ##                           geometry
     ## 168 MULTIPOLYGON(((158.86573326...
     ## 169 MULTIPOLYGON(((150.61305546...
@@ -291,11 +241,6 @@ oz_shape_sf
     ## 171 MULTIPOLYGON(((122.24694993...
     ## 172 MULTIPOLYGON(((149.38176598...
     ## 173 MULTIPOLYGON(((150.70378273...
-    ## 174 MULTIPOLYGON(((137.62289472...
-    ## 175 MULTIPOLYGON(((146.48975670...
-    ## 176 MULTIPOLYGON(((153.4873153 ...
-    ## 177 MULTIPOLYGON(((159.06885826...
-    ## 178 MULTIPOLYGON(((147.36402428...
 
 Plot using ggplot2
 ------------------

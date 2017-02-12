@@ -123,7 +123,7 @@ We can convert this to a simple features with `st_as_sf`:
 # convert to simple features
 oz_shape_sf <- sf::st_as_sf(oz_shape)
 
-oz_shape_sf
+head(oz_shape_sf)
 
 ```
 
