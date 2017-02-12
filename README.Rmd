@@ -114,6 +114,21 @@ sp::plot(oz_shape)
 
 ```
 
+
+
+## Using `sf`
+
+We can convert this to a simple features with `st_as_sf`:
+
+```{r}
+
+# convert to simple features
+oz_shape_sf <- sf::st_as_sf(oz_shape)
+
+head(oz_shape_sf)
+
+```
+
 ## Plot using ggplot2
 
 You can plot this directly from the spatial data, using the following method as described in the tidyverse here, https://github.com/tidyverse/ggplot2/wiki/plotting-polygon-shapefiles:
@@ -201,4 +216,58 @@ There is not clear way to go from mapping the colours on a grid, to the shapefil
 
 Or maybe I'm completely wrong about this. And maybe I'm overthinking it and just need to do some proper reading in the right place.
 
+## Bob Rudis's answer on SO
+
+Munging the code from [Bob Rudis's answer on Stack Overflow](http://stackoverflow.com/a/33234951/3764040) about using ggplot2 to plot a raster I have something pretty close to what I'm after.
+
+```{r}
+library(rasterVis)
+library(ggthemes)
+class(oz_shape)
+test <- raster(oz_heat)
+test_spdf <- as(test, "SpatialPixelsDataFrame")
+test_df <- as.data.frame(test_spdf)
+colnames(test_df) <- c("value", "x", "y")
+
+```
+
+So here, we specify the raster tiles of the heat information, along with the polygon from the map, and then provide the scale using the Inferno option.
+
+```{r}
+oz_heat_map <-
+ggplot() +  
+  geom_tile(data = test_df, 
+            aes(x = x, 
+                y = y, 
+                fill = value)) + 
+  geom_polygon(data = oz_shape, 
+               aes(x = long, 
+                   y = lat, 
+                   group = group), 
+               fill = NA, 
+               color = "grey50", 
+               size = 0.3) +
+  scale_fill_viridis(option = "inferno") +
+  coord_equal() +
+  theme_map() +
+  theme(legend.position = c(0.95, 0.5))
+  # theme(legend.key.width=unit(2, "cm"))
+```
+
+```{r}
+oz_heat_map
+```
+
+I owe Bob a beer.
+
+
+My friend Maëlle also pointed me to [Bob's blog post](https://rud.is/b/2016/07/27/u-s-drought-animations-with-the-witchs-brew-purrr-broom-magick/) that does a bit more of what I want, I think.
+
 ## Add better legends etc to make it look more similar to the BoM image
+
+Getting there! But for another day.
+
+Things that I want to do before I write this up as a blog post:
+
+- Control the level of smoothing of the tiles, perhaps bin up the temperatures in 5 degree bins.
+- Make sure that this approach I'm taking is inline with the current state of the art - should I be using `sf`, can I use `geom_sf`? And more.
