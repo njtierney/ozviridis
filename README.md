@@ -1,18 +1,22 @@
-There's a heatwave in Australia at the moment. And this is the heatmap that is getting shown of Australia
+There's a heatwave in Australia at the moment. And this is the heatmap that is getting shown of Australia:
 
 ``` r
 knitr::include_graphics("bom-heat-map.png")
 ```
 
-<img src="bom-heat-map.png" width="940" />
+<img src="bom-heat-map.png" width="50%" />
 
 Which shows that things are really hot.
 
-But it's also pretty darn ugly. And I wanted to see if I could make it better, using awesome packages like `viridis` to colour the heat appropriately.
+But it's also pretty darn ugly.
 
-This is me, documenting my struggle with shapefiles and geospatial data. Eventually this will get written up into a blog post. But I figured that it would be nice to put on github like this, so that others can contribute, if they like.
+I wanted to see if I could make it better, using awesome packages like `viridis` to colour the heat more appropriately.
 
-First, we load the packages.
+So this repository is me documenting my struggle with shapefiles and geospatial data. I haven't had to work with this sort of data before, so I'm making an effort to be as transparent as possible with my thoughts on doing this.
+
+Eventually this will get written up into a blog post. But I figured that it would be nice to put on github like this, so that others can contribute, if they like.
+
+OK, so first we load the packages.
 
 ``` r
 library(rgdal)
@@ -23,10 +27,9 @@ library(rgdal)
     ## rgdal: version: 1.2-5, (SVN revision 648)
     ##  Geospatial Data Abstraction Library extensions to R successfully loaded
     ##  Loaded GDAL runtime: GDAL 2.1.2, released 2016/10/24
-    ##  Path to GDAL shared files: 
+    ##  Path to GDAL shared files: /Users/tierneyn/Library/R/3.3/library/sf/gdal
     ##  Loaded PROJ.4 runtime: Rel. 4.9.1, 04 March 2015, [PJ_VERSION: 491]
-    ##  Path to PROJ.4 shared files: (autodetected)
-    ## WARNING: no proj_defs.dat in PROJ.4 shared files
+    ##  Path to PROJ.4 shared files: /Users/tierneyn/Library/R/3.3/library/sf/proj
     ##  Linking to sp version: 1.2-3
 
 ``` r
@@ -118,19 +121,6 @@ spplot(oz_heat,
 
 ![](README_files/figure-markdown_github/unnamed-chunk-4-1.png)
 
-ROpenSciLabs has a `naturalearthdata` package that is fast and easy to use.
-
-``` r
-# if (!require("devtools")) install.packages("devtools")
-# devtools::install_github("ropenscilabs/rnaturalearth")
-
-library("rnaturalearth")
-
-sp::plot(ne_states(geounit = 'australia'))
-```
-
-![](README_files/figure-markdown_github/unnamed-chunk-5-1.png)
-
 So, the goal from here is to:
 
 -   Add the shapefile of Australia
@@ -138,8 +128,295 @@ So, the goal from here is to:
 -   Plot using ggplot
 -   add better legends etc to make it look more similar to the BoM image
 
+Adding the sahpefile of Australia
+---------------------------------
+
+ROpenSciLabs has a `naturalearthdata` package that is fast and easy to use. Thank you to adamhsparks for finding this and adding to the README!
+
 ``` r
-knitr::include_graphics("bom-heat-map.png")
+# if (!require("devtools")) install.packages("devtools")
+# devtools::install_github("ropenscilabs/rnaturalearth")
+
+library("rnaturalearth")
+
+oz_shape <- rnaturalearth::ne_states(geounit = "australia")
+
+sp::plot(oz_shape)
 ```
 
-<img src="bom-heat-map.png" width="940" />
+![](README_files/figure-markdown_github/unnamed-chunk-5-1.png)
+
+Using `sf`
+----------
+
+We can convert this to a simple features with `st_as_sf`:
+
+``` r
+# convert to simple features
+oz_shape_sf <- sf::st_as_sf(oz_shape)
+
+oz_shape_sf
+```
+
+    ## Simple feature collection with 11 features and 59 fields
+    ## geometry type:  MULTIPOLYGON
+    ## dimension:      XY
+    ## bbox:           xmin: 112.9194 ymin: -54.75042 xmax: 159.1065 ymax: -9.240167
+    ## epsg (SRID):    4326
+    ## proj4string:    +proj=longlat +datum=WGS84 +no_defs
+    ##     adm1_code OBJECTID_1 diss_me adm1_cod_1 iso_3166_2 wikipedia iso_a2
+    ## 168   AUS+00?       3640   10015    AUS+00?        AU-      <NA>     AU
+    ## 169  AUS-1932       1618    1932   AUS-1932        AU-      <NA>     AU
+    ## 170  AUS-2650       6324    2650   AUS-2650        AU-      <NA>     AU
+    ## 171  AUS-2651       6322    2651   AUS-2651        AU-      <NA>     AU
+    ## 172  AUS-2653       2572    2653   AUS-2653        AU-      <NA>     AU
+    ## 173  AUS-2654       2573    2654   AUS-2654        AU-      <NA>     AU
+    ## 174  AUS-2655       2555    2655   AUS-2655        AU-      <NA>     AU
+    ## 175  AUS-2656       2554    2656   AUS-2656        AU-      <NA>     AU
+    ## 176  AUS-2657       6323    2657   AUS-2657        AU-      <NA>     AU
+    ## 177  AUS-2659       2557    2659   AUS-2659        AU-      <NA>     AU
+    ## 178  AUS-2660       2553    2660   AUS-2660        AU-      <NA>     AU
+    ##     adm0_sr                         name name_alt name_local      type
+    ## 168       5             Macquarie Island     <NA>       <NA>      <NA>
+    ## 169       1         Jervis Bay Territory     <NA>       <NA> Territory
+    ## 170       6           Northern Territory     <NA>       <NA> Territory
+    ## 171       6            Western Australia     <NA>       <NA>     State
+    ## 172       1 Australian Capital Territory     <NA>       <NA> Territory
+    ## 173       1              New South Wales     <NA>       <NA>     State
+    ## 174       3              South Australia     <NA>       <NA>     State
+    ## 175       5                     Victoria     <NA>       <NA>     State
+    ## 176       5                   Queensland     <NA>       <NA>     State
+    ## 177       5               Norfolk Island     <NA>       <NA> Territory
+    ## 178       5                     Tasmania     <NA>       <NA>     State
+    ##       type_en code_local code_hasc note hasc_maybe region region_cod
+    ## 168      <NA>       <NA>        AU <NA>       <NA>   <NA>       <NA>
+    ## 169 Territory       <NA>     AU.JB <NA>       <NA>   <NA>       <NA>
+    ## 170 Territory       <NA>     AU.NT <NA>       <NA>   <NA>       <NA>
+    ## 171     State       <NA>     AU.WA <NA>       <NA>   <NA>       <NA>
+    ## 172 Territory       <NA>     AU.CT <NA>       <NA>   <NA>       <NA>
+    ## 173     State       <NA>     AU.NS <NA>       <NA>   <NA>       <NA>
+    ## 174     State       <NA>     AU.SA <NA>       <NA>   <NA>       <NA>
+    ## 175     State       <NA>     AU.VI <NA>       <NA>   <NA>       <NA>
+    ## 176     State       <NA>     AU.QL <NA>       <NA>   <NA>       <NA>
+    ## 177 Territory       <NA>     AU.CT <NA>       <NA>   <NA>       <NA>
+    ## 178     State       <NA>     AU.TS <NA>       <NA>   <NA>       <NA>
+    ##     provnum_ne gadm_level check_me scalerank datarank abbrev postal
+    ## 168          0          0       20        10       10   <NA>   <NA>
+    ## 169          2          1       20         2        3 J.B.T.     JB
+    ## 170          7          1       20         2        3   N.T.     NT
+    ## 171          5          1       20         2        3   W.A.     WA
+    ## 172          1          1       20         2        3 A.C.T.     CT
+    ## 173          9          1       20         2        3 N.S.W.     NS
+    ## 174          6          1       20         2        3   S.A.     SA
+    ## 175          3          1       20         2        3   Vic.     VI
+    ## 176          8          1       20         2        3   Qld.     QL
+    ## 177         10          2       20         2        8   <NA>     CT
+    ## 178          4          1       20         2        3   Tas.     TS
+    ##     area_sqkm sameascity labelrank          featurecla name_len mapcolor9
+    ## 168         0        -99        20 Admin-1 aggregation       16         2
+    ## 169         0        -99         2  Admin-1 scale rank       20         2
+    ## 170         0        -99         2  Admin-1 scale rank       18         2
+    ## 171         0        -99         2  Admin-1 scale rank       17         2
+    ## 172         0          9         9  Admin-1 scale rank       28         2
+    ## 173         0        -99         2  Admin-1 scale rank       15         2
+    ## 174         0        -99         2  Admin-1 scale rank       15         2
+    ## 175         0        -99         2  Admin-1 scale rank        8         2
+    ## 176         0        -99         2  Admin-1 scale rank       10         2
+    ## 177         0        -99         3  Admin-1 scale rank       14         2
+    ## 178         0        -99         2  Admin-1 scale rank        8         2
+    ##     mapcolor13 fips fips_alt   woe_id                         woe_label
+    ## 168          7 <NA>     <NA> 22528478                              <NA>
+    ## 169          7 <NA>     <NA>  1102841                              <NA>
+    ## 170          7 AS03     <NA>  2344701 Northern Territory, AU, Australia
+    ## 171          7 AS08     <NA>  2344706  Western Australia, AU, Australia
+    ## 172          7 AS01     <NA>  1100968                              <NA>
+    ## 173          7 AS02     <NA>  2344700    New South Wales, AU, Australia
+    ## 174          7 AS05     <NA>  2344703    South Australia, AU, Australia
+    ## 175          7 AS07     <NA>  2344705           Victoria, AU, Australia
+    ## 176          7 AS04     <NA>  2344702         Queensland, AU, Australia
+    ## 177          7 AS02     <NA> 23424905                              <NA>
+    ## 178          7 AS06     <NA>  2344704                              <NA>
+    ##               woe_name latitude longitude sov_a3 adm0_a3 adm0_label
+    ## 168   Macquarie Island -54.5929   158.898    AU1     AUS          5
+    ## 169         Jervis Bay -35.1532   150.692    AU1     AUS          2
+    ## 170 Northern Territory -20.1026    133.78    AU1     AUS          2
+    ## 171  Western Australia -25.8483   121.646    AU1     AUS          2
+    ## 172           Canberra -35.4618   148.983    AU1     AUS          2
+    ## 173    New South Wales -32.4751   146.781    AU1     AUS          2
+    ## 174    South Australia -29.6504   135.783    AU1     AUS          2
+    ## 175           Victoria -37.0082    144.75    AU1     AUS          2
+    ## 176         Queensland -23.1364   144.778    AU1     AUS          2
+    ## 177     Norfolk Island  -31.586   159.076    AU1     AUS          2
+    ## 178               <NA> -42.1383   146.603    AU1     AUS          2
+    ##         admin  geonunit gu_a3    gn_id                      gn_name
+    ## 168 Australia Australia   AUS        0                         <NA>
+    ## 169 Australia Australia   AUS -2177478 Australian Capital Territory
+    ## 170 Australia Australia   AUS  2064513           Northern Territory
+    ## 171 Australia Australia   AUS  2058645   State of Western Australia
+    ## 172 Australia Australia   AUS  2177478 Australian Capital Territory
+    ## 173 Australia Australia   AUS  2155400     State of New South Wales
+    ## 174 Australia Australia   AUS  2061327     State of South Australia
+    ## 175 Australia Australia   AUS  2145234            State of Victoria
+    ## 176 Australia Australia   AUS  2152274          State of Queensland
+    ## 177 Australia Australia   AUS      -99                         <NA>
+    ## 178 Australia Australia   AUS  2147291            State of Tasmania
+    ##       gns_id                     gns_name gn_level gn_region gn_a1_code
+    ## 168        0                         <NA>        0      <NA>        AU.
+    ## 169        0                         <NA>       -1      <NA>        AU.
+    ## 170 -1592100           Northern Territory        1      <NA>      AU.03
+    ## 171 -1608952            Western Australia        1      <NA>      AU.08
+    ## 172 -1556567 Australian Capital Territory        1      <NA>      AU.01
+    ## 173 -1591422              New South Wales        1      <NA>      AU.02
+    ## 174 -1601186              South Australia        1      <NA>      AU.05
+    ## 175 -1606920                     Victoria        1      <NA>      AU.07
+    ## 176 -1596531                   Queensland        1      <NA>      AU.04
+    ## 177        0                         <NA>        0      <NA>        AU.
+    ## 178 -1603760                     Tasmania        1      <NA>      AU.06
+    ##     region_sub sub_code gns_level gns_lang gns_adm1 gns_region
+    ## 168       <NA>     <NA>         0     <NA>     <NA>       <NA>
+    ## 169       <NA>     <NA>         0     <NA>     <NA>       <NA>
+    ## 170       <NA>     <NA>         1      zho     AS03       <NA>
+    ## 171       <NA>     <NA>         1      zho     AS08       <NA>
+    ## 172       <NA>     <NA>         1      zho     AS01       <NA>
+    ## 173       <NA>     <NA>         1      zho     AS02       <NA>
+    ## 174       <NA>     <NA>         1      zho     AS05       <NA>
+    ## 175       <NA>     <NA>         1      zho     AS07       <NA>
+    ## 176       <NA>     <NA>         1      zho     AS04       <NA>
+    ## 177       <NA>     <NA>         0     <NA>     <NA>       <NA>
+    ## 178       <NA>     <NA>         1      zho     AS06       <NA>
+    ##                           geometry
+    ## 168 MULTIPOLYGON(((158.86573326...
+    ## 169 MULTIPOLYGON(((150.61305546...
+    ## 170 MULTIPOLYGON(((136.69548587...
+    ## 171 MULTIPOLYGON(((122.24694993...
+    ## 172 MULTIPOLYGON(((149.38176598...
+    ## 173 MULTIPOLYGON(((150.70378273...
+    ## 174 MULTIPOLYGON(((137.62289472...
+    ## 175 MULTIPOLYGON(((146.48975670...
+    ## 176 MULTIPOLYGON(((153.4873153 ...
+    ## 177 MULTIPOLYGON(((159.06885826...
+    ## 178 MULTIPOLYGON(((147.36402428...
+
+Plot using ggplot2
+------------------
+
+There is a `geom_sf` in the latest version of ggplot2, so I should be able to do something like what is described in the [NEWS.md bullet](https://github.com/tidyverse/ggplot2/blob/master/NEWS.md#sf). So the code would look something like:
+
+``` r
+ggplot(oz_shape_sf) +
+  geom_sf()
+```
+
+But, I'll need to add the temperature information to the simple features data, I think - judging by the example ggplot2 code:
+
+``` r
+nc <- sf::st_read(system.file("shape/nc.shp", package = "sf"), quiet = TRUE)
+
+head(nc)
+```
+
+    ## Simple feature collection with 6 features and 14 fields
+    ## geometry type:  MULTIPOLYGON
+    ## dimension:      XY
+    ## bbox:           xmin: -81.74107 ymin: 36.07282 xmax: -75.77316 ymax: 36.58965
+    ## epsg (SRID):    4267
+    ## proj4string:    +proj=longlat +datum=NAD27 +no_defs
+    ##    AREA PERIMETER CNTY_ CNTY_ID        NAME  FIPS FIPSNO CRESS_ID BIR74
+    ## 1 0.114     1.442  1825    1825        Ashe 37009  37009        5  1091
+    ## 2 0.061     1.231  1827    1827   Alleghany 37005  37005        3   487
+    ## 3 0.143     1.630  1828    1828       Surry 37171  37171       86  3188
+    ## 4 0.070     2.968  1831    1831   Currituck 37053  37053       27   508
+    ## 5 0.153     2.206  1832    1832 Northampton 37131  37131       66  1421
+    ## 6 0.097     1.670  1833    1833    Hertford 37091  37091       46  1452
+    ##   SID74 NWBIR74 BIR79 SID79 NWBIR79                       geometry
+    ## 1     1      10  1364     0      19 MULTIPOLYGON(((-81.47275543...
+    ## 2     0      10   542     3      12 MULTIPOLYGON(((-81.23989105...
+    ## 3     5     208  3616     6     260 MULTIPOLYGON(((-80.45634460...
+    ## 4     1     123   830     2     145 MULTIPOLYGON(((-76.00897216...
+    ## 5     9    1066  1606     3    1197 MULTIPOLYGON(((-77.21766662...
+    ## 6     7     954  1838     5    1237 MULTIPOLYGON(((-76.74506378...
+
+Which unfortunately gives an error when plotting
+
+``` r
+ggplot(nc) +
+  geom_sf(aes(fill = AREA)) 
+# Error in sign(x) : non-numeric argument to mathematical function
+```
+
+So where to from here?
+
+Perhaps back to base?
+
+``` r
+sp::plot(oz_shape)
+```
+
+![](README_files/figure-markdown_github/unnamed-chunk-10-1.png)
+
+``` r
+spplot(oz_heat)
+```
+
+![](README_files/figure-markdown_github/unnamed-chunk-10-2.png)
+
+I feel like there should be some way for me to just write something like:
+
+``` r
+sp::plot(oz_shape,
+         fill = oz_heat)
+```
+
+But then this makes me start thinking how I'm used to with ggplot2 - where everything is in a dataframe. Which means that, given that my `sf` dataframe is 11 rows long:
+
+``` r
+tibble::as_tibble(oz_shape_sf)
+```
+
+    ## # A tibble: 11 × 60
+    ##    adm1_code OBJECTID_1 diss_me adm1_cod_1 iso_3166_2 wikipedia iso_a2
+    ## *     <fctr>     <fctr>  <fctr>     <fctr>     <fctr>    <fctr> <fctr>
+    ## 1    AUS+00?       3640   10015    AUS+00?        AU-        NA     AU
+    ## 2   AUS-1932       1618    1932   AUS-1932        AU-        NA     AU
+    ## 3   AUS-2650       6324    2650   AUS-2650        AU-        NA     AU
+    ## 4   AUS-2651       6322    2651   AUS-2651        AU-        NA     AU
+    ## 5   AUS-2653       2572    2653   AUS-2653        AU-        NA     AU
+    ## 6   AUS-2654       2573    2654   AUS-2654        AU-        NA     AU
+    ## 7   AUS-2655       2555    2655   AUS-2655        AU-        NA     AU
+    ## 8   AUS-2656       2554    2656   AUS-2656        AU-        NA     AU
+    ## 9   AUS-2657       6323    2657   AUS-2657        AU-        NA     AU
+    ## 10  AUS-2659       2557    2659   AUS-2659        AU-        NA     AU
+    ## 11  AUS-2660       2553    2660   AUS-2660        AU-        NA     AU
+    ## # ... with 53 more variables: adm0_sr <fctr>, name <fctr>,
+    ## #   name_alt <fctr>, name_local <fctr>, type <fctr>, type_en <fctr>,
+    ## #   code_local <fctr>, code_hasc <fctr>, note <fctr>, hasc_maybe <fctr>,
+    ## #   region <fctr>, region_cod <fctr>, provnum_ne <fctr>,
+    ## #   gadm_level <fctr>, check_me <fctr>, scalerank <fctr>, datarank <fctr>,
+    ## #   abbrev <fctr>, postal <fctr>, area_sqkm <fctr>, sameascity <fctr>,
+    ## #   labelrank <fctr>, featurecla <fctr>, name_len <fctr>,
+    ## #   mapcolor9 <fctr>, mapcolor13 <fctr>, fips <fctr>, fips_alt <fctr>,
+    ## #   woe_id <fctr>, woe_label <fctr>, woe_name <fctr>, latitude <fctr>,
+    ## #   longitude <fctr>, sov_a3 <fctr>, adm0_a3 <fctr>, adm0_label <fctr>,
+    ## #   admin <fctr>, geonunit <fctr>, gu_a3 <fctr>, gn_id <fctr>,
+    ## #   gn_name <fctr>, gns_id <fctr>, gns_name <fctr>, gn_level <fctr>,
+    ## #   gn_region <fctr>, gn_a1_code <fctr>, region_sub <fctr>,
+    ## #   sub_code <fctr>, gns_level <fctr>, gns_lang <fctr>, gns_adm1 <fctr>,
+    ## #   gns_region <fctr>, geometry <S3: sfc_MULTIPOLYGON>
+
+Each row in an `sf` dataframe describes a polygon, and then there are associated values for each of those polygons. So, in order for me to plot the associated colours with each feature, there should then be some interpolation process going on to give each polygon some sort of spatially smoothed temperature value.
+
+This is almost certainly my naïvety showing, but all I really want, is to plot the shape file, and then overlay the appropriately smoothed plot. Sort of like how one can do:
+
+``` r
+plot(cars)
+lines(lowess(cars))
+```
+
+![](README_files/figure-markdown_github/unnamed-chunk-13-1.png)
+
+But I guess the problem here, is that there is not clear way to go from mapping the colours on a grid, to the shapefile, and what comes after this will be some sort of interpolation step to the shapefiles and polygons.
+
+Or maybe I'm completely wrong about this. And maybe I'm overthinking it and just need to do some proper reading in the right place.
+
+Add better legends etc to make it look more similar to the BoM image
+--------------------------------------------------------------------

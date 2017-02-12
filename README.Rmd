@@ -4,9 +4,9 @@ output:
     variant: markdown_github
 ---
 
-There's a heatwave in Australia at the moment. And this is the heatmap that is getting shown of Australia
+There's a heatwave in Australia at the moment. And this is the heatmap that is getting shown of Australia:
 
-```{r}
+```{r out.width = "50%"}
 
 knitr::include_graphics("bom-heat-map.png")
 
@@ -14,11 +14,15 @@ knitr::include_graphics("bom-heat-map.png")
 
 Which shows that things are really hot.
 
-But it's also pretty darn ugly. And I wanted to see if I could make it better, using awesome packages like `viridis` to colour the heat appropriately.
+But it's also pretty darn ugly. 
 
-This is me, documenting my struggle with shapefiles and geospatial data. Eventually this will get written up into a blog post. But I figured that it would be nice to put on github like this, so that others can contribute, if they like.
+I wanted to see if I could make it better, using awesome packages like `viridis` to colour the heat more appropriately.
 
-First, we load the packages.
+So this repository is me documenting my struggle with shapefiles and geospatial data. I haven't had to work with this sort of data before, so I'm making an effort to be as transparent as possible with my thoughts on doing this.
+
+Eventually this will get written up into a blog post. But I figured that it would be nice to put on github like this, so that others can contribute, if they like.
+
+OK, so first we load the packages.
 
 ```{r pkg-load}
 
@@ -85,19 +89,6 @@ spplot(oz_heat,
 
 ```
 
-ROpenSciLabs has a `naturalearthdata` package that is fast and easy to use.
-
-```{r}
-# if (!require("devtools")) install.packages("devtools")
-# devtools::install_github("ropenscilabs/rnaturalearth")
-
-library("rnaturalearth")
-
-sp::plot(ne_states(geounit = 'australia'))
-
-```
-
-
 So, the goal from here is to:
 
 - Add the shapefile of Australia
@@ -106,8 +97,107 @@ So, the goal from here is to:
 - add better legends etc to make it look more similar to the BoM image
 
 
-```{r}
+## Adding the sahpefile of Australia
 
-knitr::include_graphics("bom-heat-map.png")
+
+ROpenSciLabs has a `naturalearthdata` package that is fast and easy to use. Thank you to adamhsparks for finding this and adding to the README!
+
+```{r}
+# if (!require("devtools")) install.packages("devtools")
+# devtools::install_github("ropenscilabs/rnaturalearth")
+
+library("rnaturalearth")
+
+oz_shape <- rnaturalearth::ne_states(geounit = "australia")
+
+sp::plot(oz_shape)
 
 ```
+
+## Using `sf`
+
+We can convert this to a simple features with `st_as_sf`:
+
+```{r}
+
+# convert to simple features
+oz_shape_sf <- sf::st_as_sf(oz_shape)
+
+oz_shape_sf
+
+```
+
+
+## Plot using ggplot2
+
+There is a `geom_sf` in the latest version of ggplot2, so I should be able to do something like what is described in the [NEWS.md bullet](https://github.com/tidyverse/ggplot2/blob/master/NEWS.md#sf). So the code would look something like:
+
+
+```{r eval = FALSE}
+
+ggplot(oz_shape_sf) +
+  geom_sf()
+
+```
+
+But, I'll need to add the temperature information to the simple features data, I think - judging by the example ggplot2 code:
+
+```{r}
+nc <- sf::st_read(system.file("shape/nc.shp", package = "sf"), quiet = TRUE)
+
+head(nc)
+```
+
+Which unfortunately gives an error when plotting
+
+```{r eval = FALSE}
+
+ggplot(nc) +
+  geom_sf(aes(fill = AREA)) 
+# Error in sign(x) : non-numeric argument to mathematical function
+```
+
+So where to from here?
+
+Perhaps back to base?
+
+```{r}
+
+sp::plot(oz_shape)
+
+spplot(oz_heat)
+
+```
+
+I feel like there should be some way for me to just write something like:
+
+```{r eval = FALSE}
+
+sp::plot(oz_shape,
+         fill = oz_heat)
+
+```
+
+But then this makes me start thinking how I'm used to with ggplot2 - where everything is in a dataframe. Which means that, given that my `sf` dataframe is 11 rows long:
+
+```{r}
+
+tibble::as_tibble(oz_shape_sf)
+
+```
+
+
+Each row in an `sf` dataframe describes a polygon, and then there are associated values for each of those polygons. So, in order for me to plot the associated colours with each feature, there should then be some interpolation process going on to give each polygon some sort of spatially smoothed temperature value.
+
+This is almost certainly my naïvety showing, but all I really want, is to plot the shape file, and then overlay the appropriately smoothed plot. Sort of like how one can do:
+
+```{r}
+plot(cars)
+lines(lowess(cars))
+```
+
+But I guess the problem here, is that there is not clear way to go from mapping the colours on a grid, to the shapefile, and what comes after this will be some sort of interpolation step to the shapefiles and polygons.
+
+Or maybe I'm completely wrong about this. And maybe I'm overthinking it and just need to do some proper reading in the right place.
+
+## Add better legends etc to make it look more similar to the BoM image
