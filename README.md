@@ -4,7 +4,7 @@ There's a heatwave in Australia at the moment. And this is the heatmap that is g
 knitr::include_graphics("bom-heat-map.png")
 ```
 
-<img src="bom-heat-map.png" width="50%" />
+<img src="bom-heat-map.png" width="50%" style="display: block; margin: auto;" />
 
 Which shows that things are really hot.
 
@@ -414,7 +414,16 @@ lines(lowess(cars))
 
 ![](README_files/figure-markdown_github/unnamed-chunk-13-1.png)
 
-But I guess the problem here, is that there is not clear way to go from mapping the colours on a grid, to the shapefile, and what comes after this will be some sort of interpolation step to the shapefiles and polygons.
+I'd like to do something like
+
+``` r
+plot(oz_shape)
+colours(oz_heat)
+```
+
+But I guess the problem here is how to combine those two pieces of information of different size.
+
+There is not clear way to go from mapping the colours on a grid, to the shapefile, and what comes after this will be some sort of interpolation step to the shapefiles and polygons.
 
 Or maybe I'm completely wrong about this. And maybe I'm overthinking it and just need to do some proper reading in the right place.
 
