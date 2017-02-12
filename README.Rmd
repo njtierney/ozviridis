@@ -137,14 +137,16 @@ You can plot this directly from the spatial data, using the following method as 
 ```{r eval = FALSE}
 
 ggplot(oz_shape) +
-   aes(long, lat, group = group) + 
+   aes(x = long, 
+       y = lat, 
+       group = group) + 
      geom_polygon() +
      geom_path(color = "white") +
      coord_equal()
 
 ```
 
-But, I'll need to add the temperature information to the simple features data, I think - judging by the example ggplot2 code:
+But there are some ways to plot this using the new package `sf`. Do add the temperatures, I think I'll need to add this for each row of each feature.
 
 ```{r}
 nc <- sf::st_read(system.file("shape/nc.shp", package = "sf"), quiet = TRUE)
@@ -152,7 +154,7 @@ nc <- sf::st_read(system.file("shape/nc.shp", package = "sf"), quiet = TRUE)
 head(nc)
 ```
 
-Which unfortunately gives an error when plotting
+However, the `ggplot2::geom_sf` unfortunately gives an error when plotting.
 
 ```{r eval = FALSE}
 
@@ -245,7 +247,7 @@ ggplot() +
                    y = lat, 
                    group = group), 
                fill = NA, 
-               color = "grey50", 
+               color = "grey10", 
                size = 0.3) +
   scale_fill_viridis(option = "inferno") +
   coord_equal() +
@@ -259,7 +261,6 @@ oz_heat_map
 ```
 
 I owe Bob a beer.
-
 
 My friend Maëlle also pointed me to [Bob's blog post](https://rud.is/b/2016/07/27/u-s-drought-animations-with-the-witchs-brew-purrr-broom-magick/) that does a bit more of what I want, I think.
 

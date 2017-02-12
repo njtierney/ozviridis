@@ -128,7 +128,7 @@ So, the goal from here is to:
 -   Plot using ggplot
 -   add better legends etc to make it look more similar to the BoM image
 
-Adding the sahpefile of Australia
+Adding the shapefile of Australia
 ---------------------------------
 
 ROpenSciLabs has a `naturalearthdata` package that is fast and easy to use. Thank you to adamhsparks for finding this and adding to the README!
@@ -245,14 +245,19 @@ head(oz_shape_sf)
 Plot using ggplot2
 ------------------
 
-There is a `geom_sf` in the latest version of ggplot2, so I should be able to do something like what is described in the [NEWS.md bullet](https://github.com/tidyverse/ggplot2/blob/master/NEWS.md#sf). So the code would look something like:
+You can plot this directly from the spatial data, using the following method as described in the tidyverse here, <https://github.com/tidyverse/ggplot2/wiki/plotting-polygon-shapefiles>:
 
 ``` r
-ggplot(oz_shape_sf) +
-  geom_sf()
+ggplot(oz_shape) +
+   aes(x = long, 
+       y = lat, 
+       group = group) + 
+     geom_polygon() +
+     geom_path(color = "white") +
+     coord_equal()
 ```
 
-But, I'll need to add the temperature information to the simple features data, I think - judging by the example ggplot2 code:
+But there are some ways to plot this using the new package `sf`. Do add the temperatures, I think I'll need to add this for each row of each feature.
 
 ``` r
 nc <- sf::st_read(system.file("shape/nc.shp", package = "sf"), quiet = TRUE)
@@ -281,7 +286,7 @@ head(nc)
     ## 5     9    1066  1606     3    1197 MULTIPOLYGON(((-77.21766662...
     ## 6     7     954  1838     5    1237 MULTIPOLYGON(((-76.74506378...
 
-Which unfortunately gives an error when plotting
+However, the `ggplot2::geom_sf` unfortunately gives an error when plotting.
 
 ``` r
 ggplot(nc) +
@@ -426,7 +431,7 @@ ggplot() +
                    y = lat, 
                    group = group), 
                fill = NA, 
-               color = "grey50", 
+               color = "grey10", 
                size = 0.3) +
   scale_fill_viridis(option = "inferno") +
   coord_equal() +
