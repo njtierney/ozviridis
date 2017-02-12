@@ -97,7 +97,7 @@ So, the goal from here is to:
 - add better legends etc to make it look more similar to the BoM image
 
 
-## Adding the sahpefile of Australia
+## Adding the shapefile of Australia
 
 
 ROpenSciLabs has a `naturalearthdata` package that is fast and easy to use. Thank you to adamhsparks for finding this and adding to the README!
@@ -114,29 +114,18 @@ sp::plot(oz_shape)
 
 ```
 
-## Using `sf`
-
-We can convert this to a simple features with `st_as_sf`:
-
-```{r}
-
-# convert to simple features
-oz_shape_sf <- sf::st_as_sf(oz_shape)
-
-head(oz_shape_sf)
-
-```
-
-
 ## Plot using ggplot2
 
-There is a `geom_sf` in the latest version of ggplot2, so I should be able to do something like what is described in the [NEWS.md bullet](https://github.com/tidyverse/ggplot2/blob/master/NEWS.md#sf). So the code would look something like:
+You can plot this directly from the spatial data, using the following method as described in the tidyverse here, https://github.com/tidyverse/ggplot2/wiki/plotting-polygon-shapefiles:
 
 
 ```{r eval = FALSE}
 
-ggplot(oz_shape_sf) +
-  geom_sf()
+ggplot(oz_shape) +
+   aes(long, lat, group = group) + 
+     geom_polygon() +
+     geom_path(color = "white") +
+     coord_equal()
 
 ```
 
